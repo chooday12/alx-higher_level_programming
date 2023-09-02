@@ -1,9 +1,21 @@
 #!/usr/bin/node
+const argv = process.argv;
+const url = argv[2];
 const request = require('request');
-request(process.argv[2], function (error, response, body) {
-  if (error) console.log(error);
-  let list = JSON.parse(body).filter((x) => x.completed);
-  list = list.reduce((accu, current) => {
-    accu[current.userId] = accu[current.userId] + 1 || 1;
-    return accu;
-  }, {});
+request(url, function (error, response, body) {
+  if (error) {
+    console.log(error);
+  } else {
+    const rbody = JSON.parse(body);
+    const dict = {};
+    for (const i of rbody) {
+      if (i.completed === true) {
+        if (dict[i.userId] === undefined) {
+          dict[i.userId] = 0;
+        }
+        dict[i.userId] += 1;
+      }
+    }
+    console.log(dict);
+  }
+});
